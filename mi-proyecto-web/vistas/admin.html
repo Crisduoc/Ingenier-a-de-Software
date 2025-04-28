@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración de Reservas y Habitaciones</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@tailwindcss/browser@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .reserva-card {
+            background-color: #f7fafc;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid #e2e8f0;
+        }
+        .habitacion-card {
+            background-color: #f7fafc;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid #e2e8f0;
+        }
+        .lista-reservas, .lista-habitaciones-disponibles {
+            margin-top: 1rem;
+        }
+        .titulo-seccion {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.75rem;
+            color: #334155; /* Color de texto más oscuro para el título */
+        }
+    </style>
+    <script>
+        // Función para simular la conexión a la base de datos y obtener los datos
+        async function obtenerDatos() {
+            try {
+                // Simulación de datos de la base de datos
+                const reservas = await simularConsultaReservas();
+                const habitacionesDisponibles = await simularConsultaHabitacionesDisponibles();
+                return { reservas, habitacionesDisponibles };
+            } catch (error) {
+                console.error("Error al obtener los datos:", error);
+                throw error; // Re-lanza el error para que lo capture el listener del DOMContentLoaded
+            }
+        }
+
+        // Simulación de consulta a la tabla de reservas
+        async function simularConsultaReservas() {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    const reservas = [
+                        { id: 1, nombreCliente: "Juan Pérez", fechaInicio: "2024-03-10", fechaFin: "2024-03-15", habitacion: "101" },
+                        { id: 2, nombreCliente: "María García", fechaInicio: "2024-03-12", fechaFin: "2024-03-18", habitacion: "102" },
+                        { id: 3, nombreCliente: "Carlos Rodríguez", fechaInicio: "2024-03-15", fechaFin: "2024-03-20", habitacion: "103" },
+                    ];
+                    resolve(reservas);
+                }, 500);
+            });
+        }
+
+        // Simulación de consulta a la tabla de habitaciones disponibles
+        async function simularConsultaHabitacionesDisponibles() {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    const habitacionesDisponibles = [
+                        { numero: "201", tipo: "Doble" },
+                        { numero: "202", tipo: "Doble" },
+                        { numero: "203", tipo: "Suite" },
+                    ];
+                    resolve(habitacionesDisponibles);
+                }, 500);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const listaReservasDiv = document.getElementById("lista-reservas");
+            const listaHabitacionesDisponiblesDiv = document.getElementById("lista-habitaciones-disponibles");
+            const volverInicioBtn = document.getElementById("volver-inicio");
+
+            try {
+                // Obtener los datos simulados
+                const { reservas, habitacionesDisponibles } = await obtenerDatos();
+
+                // Función para mostrar las reservas
+                function mostrarReservas(reservas) {
+                    if (reservas.length === 0) {
+                        listaReservasDiv.innerHTML = "<p class='text-gray-500'>No hay reservas registradas.</p>";
+                    } else {
+                        let html = "";
+                        reservas.forEach((reserva) => {
+                            html += `<div class="reserva-card"><strong>ID:</strong> ${reserva.id}, <strong>Cliente:</strong> ${reserva.nombreCliente}, <strong>Inicio:</strong> ${reserva.fechaInicio}, <strong>Fin:</strong> ${reserva.fechaFin}, <strong>Habitación:</strong> ${reserva.habitacion}</div>`;
+                        });
+                        listaReservasDiv.innerHTML = html;
+                    }
+                }
+
+                // Función para mostrar las habitaciones disponibles
+                function mostrarHabitacionesDisponibles(habitaciones) {
+                    if (habitaciones.length === 0) {
+                        listaHabitacionesDisponiblesDiv.innerHTML = "<p class='text-gray-500'>No hay habitaciones disponibles en este momento.</p>";
+                    } else {
+                        let html = "";
+                        habitaciones.forEach((habitacion) => {
+                            html += `<div class="habitacion-card"><strong>Número:</strong> ${habitacion.numero}, <strong>Tipo:</strong> ${habitacion.tipo}</div>`;
+                        });
+                        listaHabitacionesDisponiblesDiv.innerHTML = html;
+                    }
+                }
+
+                // Mostrar los datos obtenidos
+                mostrarReservas(reservas);
+                mostrarHabitacionesDisponibles(habitacionesDisponibles);
+
+                 // Evento para el botón de volver al inicio
+                volverInicioBtn.addEventListener("click", () => {
+                    window.location.href = "/"; // Redirige a la página de inicio
+                });
+
+            } catch (error) {
+                // Manejar el error aquí, por ejemplo, mostrar un mensaje al usuario
+                console.error("Error en la página:", error);
+                listaReservasDiv.innerHTML = "<p class='text-red-500'>Ocurrió un error al cargar los datos. Por favor, inténtelo de nuevo más tarde.</p>";
+                listaHabitacionesDisponiblesDiv.innerHTML = ""; // Limpiar el otro div para evitar mostrar contenido parcial
+            }
+        });
+    </script>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="container mx-auto">
+        <h1 class="text-2xl font-semibold text-gray-800 mb-4">Administración de Reservas y Habitaciones</h1>
+
+        <div class="lista-reservas">
+            <h2 class="titulo-seccion">Lista de Reservas</h2>
+            <div id="lista-reservas" class="mt-2">
+                <p class="text-gray-500">Cargando reservas...</p>
+            </div>
+        </div>
+
+        <div class="lista-habitaciones-disponibles">
+            <h2 class="titulo-seccion">Habitaciones Disponibles</h2>
+            <div id="lista-habitaciones-disponibles" class="mt-2">
+                 <p class="text-gray-500">Cargando habitaciones disponibles...</p>
+            </div>
+        </div>
+
+        <button id="volver-inicio" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">
+            Volver al inicio
+        </button>
+    </div>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservas de Hotel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-6">
+    <h1 class="text-2xl font-semibold text-blue-600 text-center mb-8">Sistema de Reservas de Hotel</h1>
+
+    <form id="reservation-form" class="bg-white shadow-md rounded-lg p-8 max-w-md mx-auto space-y-4">
+        <div>
+            <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Nombre:</label>
+            <input type="text" id="name" name="name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <div id="name-error" class="text-red-500 text-xs italic" style="display: none;"></div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label for="check-in-date" class="block text-gray-700 text-sm font-bold mb-2">Fecha de Check-in:</label>
+                <input type="date" id="check-in-date" name="check_in_date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <div id="check-in-date-error" class="text-red-500 text-xs italic" style="display: none;"></div>
+            </div>
+            <div>
+                <label for="check-out-date" class="block text-gray-700 text-sm font-bold mb-2">Fecha de Check-out:</label>
+                <input type="date" id="check-out-date" name="check_out_date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <div id="check-out-date-error" class="text-red-500 text-xs italic" style="display: none;"></div>
+            </div>
+        </div>
+
+        <div>
+            <label for="habitacion" class="block text-gray-700 text-sm font-bold mb-2">Habitación:</label>
+            <select id="habitacion" name="habitacion_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <option value="">Seleccione una habitación</option>
+            </select>
+            <div id="habitacion-error" class="text-red-500 text-xs italic" style="display: none;"></div>
+        </div>
+
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            Reservar Habitación
+        </button>
+        <div id="message" class="mt-4 text-green-600 font-semibold"></div>
+    </form>
+
+    <script>
+        const form = document.getElementById('reservation-form');
+        const nameInput = document.getElementById('name');
+        const checkInDateInput = document.getElementById('check-in-date');
+        const checkOutDateInput = document.getElementById('check-out-date');
+        const habitacionSelect = document.getElementById('habitacion');
+        const messageDiv = document.getElementById('message');
+
+        // Función para mostrar mensajes
+        function showMessage(message, type = 'success') {
+            messageDiv.textContent = message;
+            messageDiv.className = `mt-4 text-${type === 'success' ? 'green' : 'red'}-600 font-semibold`;
+        }
+
+        // Función para validar el formulario
+        function validateForm() {
+            let isValid = true;
+
+            if (!nameInput.value.trim()) {
+                formErrorResponse("name-error", "Por favor, ingrese su nombre");
+                isValid = false;
+            } else {
+                document.getElementById("name-error").style.display = "none";
+            }
+
+            if (!checkInDateInput.value) {
+                formErrorResponse("check-in-date-error", "Por favor, ingrese la fecha de check-in");
+                isValid = false;
+            } else {
+                document.getElementById("check-in-date-error").style.display = "none";
+            }
+
+            if (!checkOutDateInput.value) {
+                formErrorResponse("check-out-date-error", "Por favor, ingrese la fecha de check-out");
+                isValid = false;
+            } else {
+                document.getElementById("check-out-date-error").style.display = "none";
+            }
+
+            if (checkInDateInput.value && checkOutDateInput.value && new Date(checkInDateInput.value) > new Date(checkOutDateInput.value)) {
+                formErrorResponse("check-out-date-error", "La fecha de check-out debe ser posterior a la fecha de check-in");
+                isValid = false;
+            } else {
+                document.getElementById("check-out-date-error").style.display = "none";
+            }
+
+            if (!habitacionSelect.value) {
+                formErrorResponse("habitacion-error", "Por favor, seleccione una habitación");
+                isValid = false;
+            } else {
+                document.getElementById("habitacion-error").style.display = "none";
+            }
+
+            return isValid;
+        }
+
+        function formErrorResponse(inputID, response) {
+            const errorDiv = document.getElementById(inputID);
+            errorDiv.textContent = response;
+            errorDiv.style.display = "block";
+        }
+
+        // Función para obtener las habitaciones (SIMULADO - Versión 6)
+        function obtenerHabitaciones() {
+            // Simulación de los datos de las 30 habitaciones disponibles con precios actualizados
+            const habitaciones = [
+                { id: 1, room_number: 101, room_type: 'Estándar', price: 80000 },
+                { id: 2, room_number: 102, room_type: 'Doble', price: 80000 },
+                { id: 3, room_number: 103, room_type: 'Estándar', price: 80000 },
+                { id: 4, room_number: 104, room_type: 'Doble', price: 80000 },
+                { id: 5, room_number: 105, room_type: 'Estándar', price: 80000 },
+                { id: 6, room_number: 106, room_type: 'Doble', price: 80000 },
+                { id: 7, room_number: 107, room_type: 'Estándar', price: 80000 },
+                { id: 8, room_number: 108, room_type: 'Doble', price: 80000 },
+                { id: 9, room_number: 109, room_type: 'Estándar', price: 80000 },
+                { id: 10, room_number: 110, room_type: 'Doble', price: 80000 },
+                { id: 11, room_number: 201, room_type: 'Estándar', price: 80000 },
+                { id: 12, room_number: 202, room_type: 'Doble', price: 80000 },
+                { id: 13, room_number: 203, room_type: 'Estándar', price: 80000 },
+                { id: 14, room_number: 204, room_type: 'Doble', price: 80000 },
+                { id: 15, room_number: 205, room_type: 'Estándar', price: 80000 },
+                { id: 16, room_number: 206, room_type: 'Doble', price: 80000 },
+                { id: 17, room_number: 207, room_type: 'Estándar', price: 80000 },
+                { id: 18, room_number: 208, room_type: 'Doble', price: 80000 },
+                { id: 19, room_number: 209, room_type: 'Estándar', price: 80000 },
+                { id: 20, room_number: 210, room_type: 'Doble', price: 80000 },
+                { id: 21, room_number: 301, room_type: 'Suite', price: 100000 },
+                { id: 22, room_number: 302, room_type: 'Suite', price: 100000 },
+                { id: 23, room_number: 303, room_type: 'Suite', price: 100000 },
+                { id: 24, room_number: 304, room_type: 'Suite', price: 100000 },
+                { id: 25, room_number: 305, room_type: 'Suite', price: 100000 },
+                { id: 26, room_number: 306, room_type: 'Suite', price: 100000 },
+                { id: 27, room_number: 307, room_type: 'Suite', price: 100000 },
+                { id: 28, room_number: 308, room_type: 'Suite', price: 100000 },
+                { id: 29, room_number: 309, room_type: 'Suite', price: 100000 },
+                { id: 30, room_number: 310, room_type: 'Suite', price: 100000 },
+            ];
+
+            // Limpiar y poblar el dropdown de habitaciones
+            habitacionSelect.innerHTML = '<option value="">Seleccione una habitación</option>';
+            habitaciones.forEach(habitacion => {
+                const option = document.createElement('option');
+                option.value = habitacion.id;
+                option.textContent = `${habitacion.room_number} - ${habitacion.room_type} ($${habitacion.price} CLP)`;
+                habitacionSelect.appendChild(option);
+            });
+        }
+
+        // Evento para cargar las habitaciones al cargar la página
+        window.addEventListener('load', obtenerHabitaciones);
+
+        // Evento para manejar el envío del formulario
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            if (!validateForm()) {
+                return;
+            }
+
+            const formData = {
+                name: nameInput.value,
+                check_in_date: checkInDateInput.value,
+                check_out_date: checkOutDateInput.value,
+                habitacion_id: habitacionSelect.value,
+            };
+
+            // Simulación de la creación de la reserva (Versión 6)
+            const reservaId = Math.floor(Math.random() * 1000);
+            showMessage(`Reserva creada exitosamente. Número de reserva: ${reservaId}`, 'success');
+            form.reset();
+            obtenerHabitaciones(); // Actualiza las habitaciones después de la reserva
+        });
+    </script>
+</body>
+</html>

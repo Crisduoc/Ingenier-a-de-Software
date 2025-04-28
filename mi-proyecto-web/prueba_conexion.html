@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificar Conexión a la Base de Datos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@tailwindcss/browser@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .mensaje-container {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            font-weight: bold;
+        }
+        .conectado {
+            background-color: #f0fdf4;
+            border: 1px solid #16a34a;
+            color: #16a34a;
+        }
+        .error {
+            background-color: #fee2e2;
+            border: 1px solid #dc2626;
+            color: #dc2626;
+        }
+        .loader {
+            border: 5px solid #f3f4f6; /* Light grey */
+            border-top: 5px solid #3b82f6; /* Blue */
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto;
+            margin-top: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const mensajeContainer = document.getElementById("mensaje-container");
+            const volverInicioBtn = document.getElementById("volver-inicio");
+            mensajeContainer.innerHTML = `<div class="loader"></div><p>Verificando conexión...</p>`; // Mostrar mensaje de carga
+
+            try {
+                // Simular una solicitud al servidor para verificar la conexión
+                const response = await fetch("/verificar-conexion"); //  Endpoint en el servidor
+                const data = await response.json();
+
+                if (data.conectado) {
+                    mensajeContainer.className = "mensaje-container conectado";
+                    mensajeContainer.textContent = "Conexión a la base de datos establecida correctamente.";
+                } else {
+                    mensajeContainer.className = "mensaje-container error";
+                    mensajeContainer.textContent = "Error al conectar a la base de datos: " + data.error;
+                }
+            } catch (error) {
+                mensajeContainer.className = "mensaje-container error";
+                mensajeContainer.textContent = "Error al conectar al servidor: " + error.message;
+            }
+
+            volverInicioBtn.addEventListener("click", () => {
+                window.history.back();
+            });
+        });
+    </script>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="container mx-auto">
+        <h1 class="text-2xl font-semibold text-gray-800 mb-4">Verificar Conexión a la Base de Datos</h1>
+        <div id="mensaje-container" class="mensaje-container">
+        </div>
+        <button id="volver-inicio" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">
+            Volver al inicio
+        </button>
+    </div>
+</body>
+</html>
